@@ -1,6 +1,7 @@
 import pygame
 import threading
 import time
+import random
 
 class DogVActions:  # Renamed class for visual actions
     """Represents DigiDog with visual effects for different actions."""
@@ -45,62 +46,62 @@ class DogVActions:  # Renamed class for visual actions
 
         self.state = "idle" if not moving else "walking"
 
+    def perform_action(self, action):
+        with self.lock:
+            if self.state != "idle":
+                print(f"Can't {action} right now, currently {self.state}.")
+                return
+            self.state = action  # Set the state before starting the thread
+
+        threading.Thread(target=self._perform_action_thread, args=(action,)).start()
+
+
+    def move_during_playing(self):
+        """Simulate playful movement when playing."""
+        if self.state == "playing":
+            direction = random.choice([-1, 1])
+            self.x += direction * self.speed  # Move left or right randomly
+
+            # Keep the dog within the screen boundaries
+            if self.x < 50:
+                self.x = 50
+            if self.x > 750:
+                self.x = 750
+
     def draw(self, screen):
         """Draw the dog based on its current state."""
 
         # Body
-        pygame.draw.ellipse(screen, (139, 69, 19), (self.x - 30, self.y, 60, 40))  # Brown oval body
-        pygame.draw.circle(screen, (139, 69, 19), (self.x, self.y - 20), 20)  # Head
+        pygame.draw.ellipse(screen, (139, 69, 19), (self.x - 30, self.y, 60, 40))
+        pygame.draw.circle(screen, (139, 69, 19), (self.x, self.y - 20), 20)
 
         # Ears
-        pygame.draw.polygon(screen, (139, 69, 19), [(self.x - 12, self.y - 30), (self.x - 20, self.y - 45), (self.x - 5, self.y - 40)])  # Left ear
-        pygame.draw.polygon(screen, (139, 69, 19), [(self.x + 12, self.y - 30), (self.x + 20, self.y - 45), (self.x + 5, self.y - 40)])  # Right ear
+        pygame.draw.polygon(screen, (139, 69, 19), [(self.x - 12, self.y - 30), (self.x - 20, self.y - 45), (self.x - 5, self.y - 40)])
+        pygame.draw.polygon(screen, (139, 69, 19), [(self.x + 12, self.y - 30), (self.x + 20, self.y - 45), (self.x + 5, self.y - 40)])
 
         # Tail
         pygame.draw.line(screen, (139, 69, 19), (self.x + 30, self.y + 10), (self.x + 45, self.y), 5)
 
         # Legs
-        pygame.draw.rect(screen, (100, 50, 20), (self.x - 20, self.y + 25 + self.leg_offset, 10, 20))  # Front left leg
-        pygame.draw.rect(screen, (100, 50, 20), (self.x - 5, self.y + 25 - self.leg_offset, 10, 20))  # Back left leg
-        pygame.draw.rect(screen, (100, 50, 20), (self.x + 5, self.y + 25 + self.leg_offset, 10, 20))  # Front right leg
-        pygame.draw.rect(screen, (100, 50, 20), (self.x + 20, self.y + 25 - self.leg_offset, 10, 20))  # Back right leg
+        pygame.draw.rect(screen, (100, 50, 20), (self.x - 20, self.y + 25 + self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, (100, 50, 20), (self.x - 5, self.y + 25 - self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, (100, 50, 20), (self.x + 5, self.y + 25 + self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, (100, 50, 20), (self.x + 20, self.y + 25 - self.leg_offset, 10, 20))
 
-        # Eyes
+        # Eyes and Nose
         if self.state != "sleeping":
-            pygame.draw.circle(screen, (255, 255, 255), (self.x - 8, self.y - 25), 5)  # Left eye
-            pygame.draw.circle(screen, (255, 255, 255), (self.x + 8, self.y - 25), 5)  # Right eye
-            pygame.draw.circle(screen, (0, 0, 0), (self.x - 8, self.y - 25), 2)  # Left pupil
-            pygame.draw.circle(screen, (0, 0, 0), (self.x + 8, self.y - 25), 2)  # Right pupil
+            pygame.draw.circle(screen, (255, 255, 255), (self.x - 8, self.y - 25), 5)
+            pygame.draw.circle(screen, (255, 255, 255), (self.x + 8, self.y - 25), 5)
+            pygame.draw.circle(screen, (0, 0, 0), (self.x - 8, self.y - 25), 2)
+            pygame.draw.circle(screen, (0, 0, 0), (self.x + 8, self.y - 25), 2)
+            pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y - 15), 4)
 
-        # Additional visuals based on state
         if self.state == "eating":
-            pygame.draw.circle(screen, (200, 0, 0), (self.x + 20, self.y + 30), 15)  # Food bowl
+            pygame.draw.circle(screen, (200, 0, 0), (self.x + 20, self.y + 30), 15)
         elif self.state == "playing":
-            pygame.draw.circle(screen, (255, 215, 0), (self.x + 40, self.y - 40), 10)  # Ball to indicate play
+            pygame.draw.circle(screen, (255, 215, 0), (self.x + 40, self.y - 40), 10)
         elif self.state == "sleeping":
             pygame.draw.line(screen, (255, 255, 255), (self.x - 15, self.y - 20), (self.x - 5, self.y - 30), 2)
-            pygame.draw.line(screen, (255, 255, 255), (self.x - 5, self.y - 20), (self.x + 5, self.y - 30), 2)  # Zzz lines
-
-    def perform_action(self, action):
-        if self.state != "idle":
-            print(f"Can't {action[:-3]} right now, currently {self.state}.")
-            return
-        threading.Thread(target=self._perform_action_thread, args=(action,)).start()
-
-    def _perform_action_thread(self, action):
-        with self.lock:
-            self.state = action
-            print(f'The dog is {action}...')
-            if action == "eating":
-                time.sleep(20)
-                print("Ok done eating!")
-            elif action == "playing":
-                time.sleep(20)
-                print("Ok done playing!")
-            elif action == "sleeping":
-                time.sleep(45)
-                print("Ok done sleeping!")
-            elif action == "sitting":
-                time.sleep(20)
-                print("Ok done sitting!")
-            self.state = "idle"
+            pygame.draw.line(screen, (255, 255, 255), (self.x - 5, self.y - 20), (self.x + 5, self.y - 30), 2)
+        elif self.state == "sitting":
+            pygame.draw.rect(screen, (150, 75, 0), (self.x - 10, self.y + 20, 20, 5))

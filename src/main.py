@@ -14,7 +14,8 @@ def main():
     pygame.display.set_caption("DigiDog: Interactive Virtual Dog")
 
     clock = pygame.time.Clock()
-    dog = Dog()
+    dog = DogVActions()
+    print(f"Dog object created: {type(dog)}")
     indoor = Indoor(screen)
     outdoor = Outdoor(screen)
 
@@ -39,6 +40,9 @@ def main():
                     dog.perform_action("sitting")
 
         dog.move(keys)
+
+        if isinstance(dog, DogVActions) and dog.state == "playing":
+            dog.move_during_playing()
 
         # 🚪 Room Switching Logic
         if current_location == "indoor":

@@ -75,27 +75,30 @@ class Dog:
         pygame.draw.rect(screen, (100, 50, 20), (self.x + 20, self.y + 25 - self.leg_offset, 10, 20))  # Back right leg
 
     def perform_action(self, action):
-        """Start an action in a separate thread to avoid blocking the main game loop."""
+     with self.lock:
         if self.state != "idle":
-            print(f"Can't {action[:-3]} right now, currently {self.state}.")  # Remove 'ing' for better message
+            print(f"Can't {action} right now, currently {self.state}.")
             return
+        self.state = action  # Set the state before starting the thread
+
         threading.Thread(target=self._perform_action_thread, args=(action,)).start()
 
+
     def _perform_action_thread(self, action):
-        """Handle the dog's actions using threading and synchronization."""
+        print(f'The dog is {action}...')
+
+        if action == "eating":
+            time.sleep(20)
+            print("Ok done eating!")
+        elif action == "playing":
+            time.sleep(20)
+            print("Ok done playing!")
+        elif action == "sleeping":
+            time.sleep(45)
+            print("Ok done sleeping!")
+        elif action == "sitting":
+            time.sleep(20)
+            print("Ok done sitting!")
+
         with self.lock:
-            self.state = action
-            print(f'The dog is {action}...')
-            if action == "eating":
-                time.sleep(20)
-                print("Ok done eating!")
-            elif action == "playing":
-                time.sleep(20)
-                print("Ok done playing!")
-            elif action == "sleeping":
-                time.sleep(45)
-                print("Ok done sleeping!")
-            elif action == "sitting":
-                time.sleep(20)
-                print("Ok done sitting!")
-            self.state = "idle"  # Return to idle state after the action
+            self.state = "idle"
