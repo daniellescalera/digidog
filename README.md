@@ -1,3 +1,4 @@
+
 ## 🐶 Welcome to DigiDog!
 
 **DigiDog** is your very own interactive virtual dog, built in Python using `pygame`.
@@ -36,3 +37,7 @@ This solo project simulates a playful cartoon-style dog that can eat, sleep, sit
 pip install pygame 
 
 ## if youre using a virtual environment:
+
+DigiDog Project Initialized
+Welcome to DigiDog! Your very own virtual dog!
+
