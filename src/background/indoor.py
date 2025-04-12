@@ -6,6 +6,7 @@ class Indoor:
     def __init__(self, screen):
         """Initialize indoor background properties."""
         self.screen = screen
+        # self.background = pygame.image.load("assets/indoor_background.png")  # or your correct path
 
     def draw(self):
         """Draw the main home room where the dog lives."""

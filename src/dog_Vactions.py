@@ -6,15 +6,17 @@ import random
 class DogVActions:  # Renamed class for visual actions
     """Represents DigiDog with visual effects for different actions."""
 
-    def __init__(self):
-        """Initialize the dog's position, state, and thread lock for synchronization."""
-        self.x = 400
+    def __init__(self, screen, background=None):
+        self.x = 100
         self.y = 300
         self.speed = 5
-        self.state = "idle"  # Dog starts in an idle state
-        self.lock = threading.Lock()  # Prevent conflicting actions
-        self.leg_offset = 0  # Controls leg animation
-        self.wag_counter = 0  # Controls walking animation speed
+        self.state = "idle"
+        self.lock = threading.Lock()
+        self.wag_counter = 0
+        self.leg_offset = 0
+        self.screen = screen
+
+
 
     def move(self, keys):
         """Move the dog based on key presses, but prevent movement if busy."""
@@ -55,18 +57,48 @@ class DogVActions:  # Renamed class for visual actions
 
         threading.Thread(target=self._perform_action_thread, args=(action,)).start()
 
+    def _perform_action_thread(self, action: str):
+        with self.lock:
+            print(f"Performing action: {action}")
+            self.state = action
+            self.action_start_time = time.time()
+            self.action_duration = 15  # seconds
+
 
     def move_during_playing(self):
-        """Simulate playful movement when playing."""
-        if self.state == "playing":
-            direction = random.choice([-1, 1])
-            self.x += direction * self.speed  # Move left or right randomly
+        print("Dog is playing! Moving around...")
+        import pygame
+        clock = pygame.time.Clock()
 
-            # Keep the dog within the screen boundaries
-            if self.x < 50:
-                self.x = 50
-            if self.x > 750:
-                self.x = 750
+        start_time = time.time()
+        direction = 1
+
+        while time.time() - start_time < 15:
+            self.x += self.speed * direction
+
+            # Bounce off edges
+            if self.x > 700 or self.x < 100:
+                direction *= -1
+
+        # Animate legs
+            self.wag_counter += 1
+            if self.wag_counter >= 5:
+                self.wag_counter = 0
+                self.leg_offset = -self.leg_offset + 5
+                print(f"Leg offset updated to: {self.leg_offset}")
+
+            # Redraw scene
+            self.screen.fill((200, 180, 150))  # wall
+            pygame.draw.rect(self.screen, (100, 80, 60), (0, 400, 800, 200))  # floor
+
+            self.draw(self.screen)
+            pygame.display.update()
+            clock.tick(30)
+
+        # Reset leg position after playing
+        self.leg_offset = 0
+
+
 
     def draw(self, screen):
         """Draw the dog based on its current state."""
