@@ -15,14 +15,21 @@ class DogVActions:
         self.wag_counter = 0
         self.leg_offset = 0
         self.screen = screen
+        self.busy_animating = False
 
-        # Tail wagging setup
         self.tail_offset = 0
         self.tail_direction = 1
         self.tail_counter = 0
 
+        self.head_bob_offset = 0
+        self.last_bob_time = 0
+        self.action_end_time = 0
+        self.sleep_zzz_offset = 0
+        self.last_zzz_time = 0
+        self.showing_zzz = False
+        self.last_play_time = 0
+
     def move(self, keys):
-        """Move the dog based on key presses, but prevent movement if busy."""
         if self.state not in ["idle", "walking"]:
             return
 
@@ -59,70 +66,94 @@ class DogVActions:
         threading.Thread(target=self._perform_action_thread, args=(action,)).start()
 
     def _perform_action_thread(self, action: str):
+        self.busy_animating = True
         with self.lock:
             print(f"Performing action: {action}")
             self.state = action
             self.action_start_time = time.time()
-            self.action_duration = 30 if action == "sleeping" else 15  # sleeping is longer
+            if action == "sleeping":
+                self.action_duration = 30
+            elif action == "sitting":
+                self.action_duration = 5
+            else:
+                self.action_duration = 15
 
-    def move_during_playing(self):
-        print("Dog is playing! Moving around...")
-        clock = pygame.time.Clock()
-        start_time = time.time()
-        direction = 1
+        if action == "eating":
+            self.last_bob_time = time.time()
+            self.action_end_time = self.action_start_time + self.action_duration
+            self.state = "eating_animating"
 
-        while time.time() - start_time < 15:
-            self.x += self.speed * direction
-            if self.x > 700 or self.x < 100:
-                direction *= -1
+        elif action == "sitting":
+            time.sleep(self.action_duration)
+            print("✅ Done sitting!")
+            self.state = "idle"
 
-            self.wag_counter += 1
-            if self.wag_counter >= 5:
-                self.wag_counter = 0
-                self.leg_offset = -self.leg_offset + 5
+        elif action == "sleeping":
+            self.last_zzz_time = time.time()
+            self.action_end_time = self.action_start_time + self.action_duration
+            while time.time() < self.action_end_time:
+                now = time.time()
+                if now - self.last_zzz_time > 0.8:
+                    self.showing_zzz = not self.showing_zzz
+                    self.last_zzz_time = now
+                time.sleep(0.05)
+            print("💤 Done sleeping!")
+            self.state = "idle"
 
-            self.screen.fill((200, 180, 150))  # wall
-            pygame.draw.rect(self.screen, (100, 80, 60), (0, 400, 800, 200))  # floor
-            self.draw(self.screen)
-            pygame.display.update()
-            clock.tick(30)
+        elif action == "playing":
+            self.action_end_time = self.action_start_time + self.action_duration
+            self.last_play_time = time.time()
+            while time.time() < self.action_end_time:
+                self.x += self.speed
+                if self.x > 700 or self.x < 100:
+                    self.speed *= -1
+                self.wag_counter += 1
+                if self.wag_counter >= 5:
+                    self.wag_counter = 0
+                    self.leg_offset = -self.leg_offset + 5
+                time.sleep(0.05)
+            print("🎾 Done playing!")
+            self.state = "idle"
 
-        self.leg_offset = 0
+        self.busy_animating = False
 
-    def draw(self, screen):
-        """Draw the dog based on its current state."""
+    def draw(self, screen, head_offset=None):
+        if head_offset is None:
+            head_offset = self.head_bob_offset
 
-        # Tail wagging logic
         if self.state == "idle":
             self.tail_counter += 1
             if self.tail_counter >= 5:
                 self.tail_counter = 0
                 self.tail_offset += self.tail_direction * 2
-                if abs(self.tail_offset) > 10:
+                if abs(self.tail_offset) > 8:
                     self.tail_direction *= -1
         else:
             self.tail_offset = 0
 
-        # Body
-        pygame.draw.ellipse(screen, (139, 69, 19), (self.x - 30, self.y, 60, 40))
-        pygame.draw.circle(screen, (139, 69, 19), (self.x, self.y - 20), 20)
+        body_color = (139, 69, 19)
+        leg_color = (100, 50, 20)
 
-        # Ears
-        pygame.draw.polygon(screen, (139, 69, 19), [(self.x - 12, self.y - 30), (self.x - 20, self.y - 45), (self.x - 5, self.y - 40)])
-        pygame.draw.polygon(screen, (139, 69, 19), [(self.x + 12, self.y - 30), (self.x + 20, self.y - 45), (self.x + 5, self.y - 40)])
+        pygame.draw.ellipse(screen, body_color, (self.x - 30, self.y, 60, 40))
 
-        # Tail (animated)
-        pygame.draw.line(screen, (139, 69, 19),
+        y_head = self.y - 20 + head_offset
+        if self.state == "sleeping":
+            y_head += 10
+
+        pygame.draw.circle(screen, body_color, (self.x, y_head), 20)
+
+        pygame.draw.polygon(screen, body_color, [(self.x - 12, self.y - 30), (self.x - 20, self.y - 45), (self.x - 5, self.y - 40)])
+        pygame.draw.polygon(screen, body_color, [(self.x + 12, self.y - 30), (self.x + 20, self.y - 45), (self.x + 5, self.y - 40)])
+
+        pygame.draw.line(screen, body_color,
                          (self.x + 30, self.y + 10),
-                         (self.x + 45 + self.tail_offset, self.y), 5)
+                         (self.x + 45, self.y + self.tail_offset), 5)
 
-        # Legs
-        pygame.draw.rect(screen, (100, 50, 20), (self.x - 20, self.y + 25 + self.leg_offset, 10, 20))
-        pygame.draw.rect(screen, (100, 50, 20), (self.x - 5, self.y + 25 - self.leg_offset, 10, 20))
-        pygame.draw.rect(screen, (100, 50, 20), (self.x + 5, self.y + 25 + self.leg_offset, 10, 20))
-        pygame.draw.rect(screen, (100, 50, 20), (self.x + 20, self.y + 25 - self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, leg_color, (self.x - 20, self.y + 25 + self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, leg_color, (self.x - 5, self.y + 25 - self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, leg_color, (self.x + 5, self.y + 25 + self.leg_offset, 10, 20))
+        pygame.draw.rect(screen, leg_color, (self.x + 20, self.y + 25 - self.leg_offset, 10, 20))
 
-        # Eyes and Nose
         if self.state != "sleeping":
             pygame.draw.circle(screen, (255, 255, 255), (self.x - 8, self.y - 25), 5)
             pygame.draw.circle(screen, (255, 255, 255), (self.x + 8, self.y - 25), 5)
@@ -130,13 +161,13 @@ class DogVActions:
             pygame.draw.circle(screen, (0, 0, 0), (self.x + 8, self.y - 25), 2)
             pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y - 15), 4)
 
-        # Extras based on state
-        if self.state == "eating":
-            pygame.draw.circle(screen, (200, 0, 0), (self.x + 20, self.y + 30), 15)  # red food
+        if self.state == "eating_animating":
+            pygame.draw.rect(screen, (255, 255, 255), (self.x + 25, self.y + 15, 20, 10))
         elif self.state == "playing":
-            pygame.draw.circle(screen, (255, 215, 0), (self.x + 40, self.y - 40), 10)  # ball
-        elif self.state == "sleeping":
-            pygame.draw.line(screen, (255, 255, 255), (self.x - 15, self.y - 20), (self.x - 5, self.y - 30), 2)
-            pygame.draw.line(screen, (255, 255, 255), (self.x - 5, self.y - 20), (self.x + 5, self.y - 30), 2)
+            pygame.draw.circle(screen, (255, 215, 0), (self.x + 40, self.y - 40), 10)
+        elif self.state == "sleeping" and self.showing_zzz:
+            font = pygame.font.Font(None, 30)
+            z_text = font.render("Zzz", True, (255, 255, 255))
+            screen.blit(z_text, (self.x + 30, self.y - 40))
         elif self.state == "sitting":
-            pygame.draw.rect(screen, (150, 75, 0), (self.x - 10, self.y + 20, 20, 5))  # seated tail stub
+            pygame.draw.rect(screen, (150, 75, 0), (self.x - 10, self.y + 20, 20, 5))
