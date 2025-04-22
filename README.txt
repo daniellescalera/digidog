@@ -1,18 +1,3 @@
-DigiDog - Virtual Pet Simulation
-Author: Danielle Scalera
-
-📄 Project Overview
-DigiDog is a virtual pet simulation that demonstrates key operating system concepts such as multithreading, synchronization, and process/thread states. Users can interact with the dog through various actions, each managed in separate threads to showcase concurrent programming principles.
-
-🖥️ System Requirements
-Operating System: Linux, macOS, or Windows
-
-Python Version: 3.10 or higher
-
-WSL Support: WSL (Windows Subsystem for Linux) is supported and works well for running this project on Windows environments.
-
-Dependencies: Listed in requirements.txt (primarily pygame==2.6.1)
-
 🛠️ Setup Instructions
 Clone the Repository:
 
@@ -79,6 +64,8 @@ Multithreading: Each dog action runs in its own thread to allow concurrent execu
 Synchronization: A threading lock ensures that only one action thread can run at a time, preventing overlapping actions.
 
 Process/Thread States: The dog's state transitions (e.g., idle, sleeping, playing) mimic real OS thread states, providing a visual representation of these concepts.
+
+Timed Actions: Each action uses a timed delay (e.g., 5–15 seconds) to simulate how long a thread might run before returning to idle.
 
 📝 Additional Notes
 Ensure that Python 3.10 or higher is installed on your system.
