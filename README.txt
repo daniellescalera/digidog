@@ -1,5 +1,4 @@
 DigiDog - Virtual Pet Simulation
-
 Author: Danielle Scalera
 
 📄 Project Overview
@@ -9,6 +8,8 @@ DigiDog is a virtual pet simulation that demonstrates key operating system conce
 Operating System: Linux, macOS, or Windows
 
 Python Version: 3.10 or higher
+
+WSL Support: WSL (Windows Subsystem for Linux) is supported and works well for running this project on Windows environments.
 
 Dependencies: Listed in requirements.txt (primarily pygame==2.6.1)
 
@@ -26,14 +27,13 @@ Create a Virtual Environment:
 
 To keep dependencies isolated, create a virtual environment:
 
-On macOS/Linux:
+On macOS/Linux or WSL:
 
 bash
 Copy
 Edit
 python3 -m venv venv
 source venv/bin/activate
-
 On Windows:
 
 bash
@@ -63,13 +63,13 @@ Use the following keys to interact with DigiDog:
 
 Arrow Keys: Move the dog around the environment.
 
-F: Feed the dog.
+F: Feed the dog
 
-P: Play with the dog.
+P: Play with the dog
 
-S: Put the dog to sleep.
+S: Put the dog to sleep
 
-C: Command the dog to sit.
+C: Command the dog to sit
 
 Note: The application is designed so that only one action can occur at a time. If an action is already in progress, other actions will be ignored until the current one completes. This behavior illustrates thread synchronization using locks.
 
@@ -85,5 +85,5 @@ Ensure that Python 3.10 or higher is installed on your system.
 
 The venv directory is excluded from the repository to prevent environment conflicts. Users should create their own virtual environment as outlined above.
 
-For any issues or questions, please refer to the project's GitHub repository: https://github.com/daniellescalera/digidog
-
+For any issues or questions, please refer to the project's GitHub repository:
+https://github.com/daniellescalera/digidog
