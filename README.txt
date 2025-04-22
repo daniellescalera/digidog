@@ -1,43 +1,89 @@
+DigiDog - Virtual Pet Simulation
 
-## 🐶 Welcome to DigiDog!
+Author: Danielle Scalera
 
-**DigiDog** is your very own interactive virtual dog, built in Python using `pygame`.
+📄 Project Overview
+DigiDog is a virtual pet simulation that demonstrates key operating system concepts such as multithreading, synchronization, and process/thread states. Users can interact with the dog through various actions, each managed in separate threads to showcase concurrent programming principles.
 
-This solo project simulates a playful cartoon-style dog that can eat, sleep, sit, and play, all through keyboard commands. The dog responds with simple animations and can move between **indoor** and **outdoor** environments.
+🖥️ System Requirements
+Operating System: Linux, macOS, or Windows
 
----
+Python Version: 3.10 or higher
 
-### ✨ Features
+Dependencies: Listed in requirements.txt (primarily pygame==2.6.1)
 
-- Interactive commands:
-  - F – Feed the dog  
-  - P – Play with the dog  
-  - S – Let the dog sleep  
-  - C – Make the dog sit  
-  - ⬅️➡️⬆️⬇️ Arrow keys – Move the dog around when idle
-- Room switching between **indoor** and **outdoor** 
-    - When you start, the dog will be indoors, to go outdoors, use your right arrow key
-- Visual feedback for each action (ball, food bowl, sleeping "Z")
-- Smooth animation with time-limited actions
+🛠️ Setup Instructions
+Clone the Repository:
 
----
+Open your terminal or command prompt and run:
 
-### 📦 Requirements & Dependencies
+bash
+Copy
+Edit
+git clone https://github.com/daniellescalera/digidog.git
+cd digidog
+Create a Virtual Environment:
 
-- **Python 3.10+**
-- **Pygame**
+To keep dependencies isolated, create a virtual environment:
 
-#### Install Python (if needed):
+On macOS/Linux:
 
-- Download from [https://www.python.org/downloads/](https://www.python.org/downloads/)
-- Make sure to check **“Add Python to PATH”** during installation (on Windows)
+bash
+Copy
+Edit
+python3 -m venv venv
+source venv/bin/activate
 
-#### Install Pygame:
+On Windows:
 
-pip install pygame 
+bash
+Copy
+Edit
+python -m venv venv
+venv\Scripts\activate
+Install Dependencies:
 
-## if youre using a virtual environment:
+With the virtual environment activated, install the required packages:
 
-DigiDog Project Initialized
-Welcome to DigiDog! Your very own virtual dog!
+bash
+Copy
+Edit
+pip install -r requirements.txt
+🚀 Running the Application
+Navigate to the src directory and execute the main script:
+
+bash
+Copy
+Edit
+python src/main.py
+Upon running, a window will open displaying the DigiDog simulation.
+
+🎮 Controls and Interactions
+Use the following keys to interact with DigiDog:
+
+Arrow Keys: Move the dog around the environment.
+
+F: Feed the dog.
+
+P: Play with the dog.
+
+S: Put the dog to sleep.
+
+C: Command the dog to sit.
+
+Note: The application is designed so that only one action can occur at a time. If an action is already in progress, other actions will be ignored until the current one completes. This behavior illustrates thread synchronization using locks.
+
+🧠 Operating System Concepts Demonstrated
+Multithreading: Each dog action runs in its own thread to allow concurrent execution without freezing the UI.
+
+Synchronization: A threading lock ensures that only one action thread can run at a time, preventing overlapping actions.
+
+Process/Thread States: The dog's state transitions (e.g., idle, sleeping, playing) mimic real OS thread states, providing a visual representation of these concepts.
+
+📝 Additional Notes
+Ensure that Python 3.10 or higher is installed on your system.
+
+The venv directory is excluded from the repository to prevent environment conflicts. Users should create their own virtual environment as outlined above.
+
+For any issues or questions, please refer to the project's GitHub repository: https://github.com/daniellescalera/digidog
 
