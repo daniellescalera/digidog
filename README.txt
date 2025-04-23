@@ -1,76 +1,82 @@
 🛠️ Setup Instructions
-Clone the Repository:
+
+1. Clone the Repository:
 
 Open your terminal or command prompt and run:
 
-bash
-Copy
-Edit
-git clone https://github.com/daniellescalera/digidog.git
-cd digidog
-Create a Virtual Environment:
+    git clone https://github.com/daniellescalera/digidog.git
+    cd digidog
 
-To keep dependencies isolated, create a virtual environment:
+2. Create a Virtual Environment:
 
-On macOS/Linux or WSL:
+To keep dependencies isolated, create a virtual environment.
 
-bash
-Copy
-Edit
-python3 -m venv venv
-source venv/bin/activate
-On Windows:
+▶ On macOS/Linux/WSL:
+    python3 -m venv venv
+    source venv/bin/activate
 
-bash
-Copy
-Edit
-python -m venv venv
-venv\Scripts\activate
-Install Dependencies:
+▶ On Windows:
+    python -m venv venv
+    venv\Scripts\activate
 
-With the virtual environment activated, install the required packages:
+⚠️ If you're using **Python 3.12 or higher on Linux/WSL**, pip may show an “externally-managed-environment” error.
+To resolve this, use:
+    
+    pip install --break-system-packages -r requirements.txt
 
-bash
-Copy
-Edit
-pip install -r requirements.txt
+If installing individually:
+    
+    pip install --break-system-packages pygame
+
+Make sure your virtual environment is correctly activated. You can confirm this by running:
+
+    which pip
+
+It should return a path ending in `/venv/bin/pip` (not `/usr/bin/pip`).
+
+3. Install Dependencies:
+
+With your virtual environment activated, install the required packages:
+
+    pip install -r requirements.txt
+
+
 🚀 Running the Application
-Navigate to the src directory and execute the main script:
 
-bash
-Copy
-Edit
-python src/main.py
-Upon running, a window will open displaying the DigiDog simulation.
+Once everything is installed, run the application with:
+
+    python src/main.py
+
+A window will open displaying the DigiDog simulation.
+
+---
 
 🎮 Controls and Interactions
-Use the following keys to interact with DigiDog:
 
-Arrow Keys: Move the dog around the environment.
+- **Arrow Keys**: Move DigiDog around the environment
+- **F**: Feed the dog
+- **P**: Play with the dog
+- **S**: Put the dog to sleep
+- **C**: Command the dog to sit
 
-F: Feed the dog
+🔒 Note: The program uses synchronization to ensure only one action occurs at a time. You must wait for an action to complete before starting a new one.
 
-P: Play with the dog
-
-S: Put the dog to sleep
-
-C: Command the dog to sit
-
-Note: The application is designed so that only one action can occur at a time. If an action is already in progress, other actions will be ignored until the current one completes. This behavior illustrates thread synchronization using locks.
 
 🧠 Operating System Concepts Demonstrated
-Multithreading: Each dog action runs in its own thread to allow concurrent execution without freezing the UI.
 
-Synchronization: A threading lock ensures that only one action thread can run at a time, preventing overlapping actions.
+- **Multithreading**: Each action runs in a separate thread to prevent UI freezing.
+- **Synchronization**: `threading.Lock()` ensures only one action can occur at a time.
+- **Process & Thread States**: The dog’s `state` (idle, sleeping, playing, etc.) represents OS thread states.
+- **Timed Actions**: Each behavior has a set duration (e.g., 5–30 seconds) to simulate thread runtime.
 
-Process/Thread States: The dog's state transitions (e.g., idle, sleeping, playing) mimic real OS thread states, providing a visual representation of these concepts.
-
-Timed Actions: Each action uses a timed delay (e.g., 5–15 seconds) to simulate how long a thread might run before returning to idle.
 
 📝 Additional Notes
-Ensure that Python 3.10 or higher is installed on your system.
 
-The venv directory is excluded from the repository to prevent environment conflicts. Users should create their own virtual environment as outlined above.
+- Ensure **Python 3.10+** is installed on your system
+- If you're using WSL, you may need to use `python3` instead of `python`
+- The `venv` folder is intentionally excluded from the repository — users must create their own virtual environment
+- If you encounter pip issues, check that you're using the correct version of pip inside your virtual environment
 
-For any issues or questions, please refer to the project's GitHub repository:
+📦 GitHub Repository:
 https://github.com/daniellescalera/digidog
+
